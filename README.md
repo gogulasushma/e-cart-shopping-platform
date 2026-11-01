@@ -3,6 +3,9 @@
 ## 📌 Project Overview
 
 E-Cart is an online shopping platform developed using Python Flask. It allows customers to browse products, add items to their shopping cart, manage wishlists, and place orders. It also provides an admin panel to manage products and customer orders.
+## 🖥️ Project Screenshot
+
+![E-Cart Homepage](homepage.png)
 
 ## 🛠️ Technologies Used
 
