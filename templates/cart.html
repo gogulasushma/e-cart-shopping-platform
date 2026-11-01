@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}E-Cart | My Cart{% endblock %}
+{% block content %}
+<section class="page-heading"><span class="eyebrow">ALMOST YOURS</span><h1>My Shopping Cart</h1><p>Review your items before checkout.</p></section>
+{% if items %}
+<div class="cart-layout"><section class="cart-items">
+    {% for item in items %}
+    <article class="cart-item">
+        <img src="{{ item.image }}" alt="{{ item.name }}" onerror="this.onerror=null;this.src='https://placehold.co/200x200/fce7f0/9d174d?text=E-Cart';">
+        <div class="cart-item-details"><span class="product-category">{{ item.category }}</span><h3>{{ item.name }}</h3><p>₹{{ item.price }} each</p>
+        <div class="cart-actions"><form action="{{ url_for('update_cart', pid=item.id) }}" method="post" class="quantity-form"><label for="cartqty-{{ item.id }}">Qty</label><input id="cartqty-{{ item.id }}" type="number" name="quantity" min="1" max="{{ item.stock }}" value="{{ item.quantity }}"><button class="btn btn-outline-pink btn-sm" type="submit">Update</button></form>
+        <form action="{{ url_for('remove_from_cart', pid=item.id) }}" method="post"><button class="remove-link" type="submit">Remove</button></form></div></div>
+        <strong class="cart-line-total">₹{{ item.amount }}</strong>
+    </article>
+    {% endfor %}
+    <a class="text-link continue-link" href="{{ url_for('products') }}">← Continue shopping</a>
+</section>
+<aside class="summary-card"><h2>Price Details</h2><div class="summary-row"><span>Subtotal</span><strong>₹{{ subtotal }}</strong></div><div class="summary-row"><span>Discount ({{ rate }}%)</span><strong class="discount-value">− ₹{{ discount }}</strong></div><div class="summary-row total-row"><span>Total</span><strong>₹{{ total }}</strong></div><p class="summary-note">{% if rate == 0 %}Add items worth ₹{{ 1000 - subtotal }} to reach the first discount level.{% else %}Your {{ rate }}% discount has been applied!{% endif %}</p><a class="btn btn-pink btn-lg w-100" href="{{ url_for('checkout') }}">Proceed to Checkout</a><small class="secure-note">♡ Simple and secure demo checkout</small></aside></div>
+{% else %}
+<div class="empty-state"><div>🛒</div><h2>Your cart is waiting for something lovely</h2><p>You haven't added any products yet.</p><a class="btn btn-pink btn-lg" href="{{ url_for('products') }}">Start Shopping</a></div>
+{% endif %}
+{% endblock %}

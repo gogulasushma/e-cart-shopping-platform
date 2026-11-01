@@ -1,0 +1,81 @@
+
+{% extends "base.html" %}
+
+{% block title %}E-Cart | Order Successful{% endblock %}
+
+{% block content %}
+
+<section class="success-card">
+
+    <div class="success-icon">✓</div>
+
+    <span class="eyebrow">ORDER CONFIRMED</span>
+
+    <h1>🎉 Congratulations on Your Purchase!</h1>
+
+    <p class="success-lead">
+        Your order has been placed successfully.
+    </p>
+
+    <div class="order-number">
+        Order Number <strong>#{{ order["order_number"] }}</strong>
+    </div>
+
+    <div class="success-details">
+
+        {% for item in order["items"] %}
+        <div class="summary-row">
+            <span>
+                {{ item["name"] }} × {{ item["quantity"] }}
+            </span>
+            <strong>₹{{ item["amount"] }}</strong>
+        </div>
+        {% endfor %}
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>₹{{ order["subtotal"] }}</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Discount ({{ order["discount_rate"] }}%)</span>
+            <strong class="discount-value">
+                − ₹{{ order["discount"] }}
+            </strong>
+        </div>
+
+        <div class="summary-row total-row">
+            <span>Total Amount</span>
+            <strong>₹{{ order["total"] }}</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Order Status</span>
+            <span class="status-pill">{{ order["status"] }}</span>
+        </div>
+
+    </div>
+
+    <p class="thank-you">
+        Thank you for shopping with E-Cart!
+        We hope to see you again soon.
+    </p>
+
+    <div class="success-buttons">
+
+        <a class="btn btn-pink btn-lg"
+           href="{{ url_for('products') }}">
+            Continue Shopping
+        </a>
+
+        <a class="btn btn-outline-pink btn-lg"
+           href="{{ url_for('orders') }}">
+            View My Orders
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}
+

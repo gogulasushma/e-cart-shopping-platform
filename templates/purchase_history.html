@@ -1,0 +1,336 @@
+
+{% extends "base.html" %}
+
+{% block title %}E-Cart | Purchase History{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <span class="eyebrow">YOUR E-CART JOURNEY</span>
+    <h1>My Orders</h1>
+    <p>Track your purchases and check their latest status.</p>
+</section>
+
+<style>
+    .history-list {
+        display: grid;
+        gap: 25px;
+    }
+
+    .history-card {
+        background: white;
+        padding: 25px;
+        border-radius: 14px;
+        border: 1px solid #f3d5e2;
+        margin-bottom: 20px;
+    }
+
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+
+    .status-pill {
+        background: #fce7f0;
+        color: #d63384;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .history-products {
+        margin: 20px 0;
+    }
+
+    .history-product {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f3eeee;
+        gap: 15px;
+    }
+
+    .history-total {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .tracking-title {
+        margin-top: 25px;
+        color: #d63384;
+    }
+
+    .tracking-steps {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 20px;
+        position: relative;
+    }
+
+    .tracking-step {
+        flex: 1;
+        text-align: center;
+        font-size: 13px;
+        color: #999;
+    }
+
+    .tracking-dot {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #ddd;
+        margin: 0 auto 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+
+    .tracking-step.completed {
+        color: #d63384;
+        font-weight: bold;
+    }
+
+    .tracking-step.completed .tracking-dot {
+        background: #d63384;
+    }
+
+    .tracking-note {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .tracking-step.cancelled {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .tracking-step.cancelled .tracking-dot {
+        background: #dc3545;
+    }
+
+    .cancel-section {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid #eee;
+    }
+
+    .cancel-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .cancel-btn:hover {
+        background: #b02a37;
+    }
+
+    .cancelled-message {
+        color: #dc3545;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .flash-message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .flash-success {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .flash-error {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    @media (max-width: 600px) {
+        .history-card {
+            padding: 16px;
+        }
+
+        .tracking-step {
+            font-size: 10px;
+        }
+    }
+</style>
+
+<!-- Flash Messages -->
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="flash-message {% if category == 'error' %}flash-error{% else %}flash-success{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endwith %}
+
+{% if orders %}
+
+<div class="history-list">
+
+    {% for order in orders %}
+
+    <article class="history-card">
+
+        <div class="history-header">
+
+            <div>
+                <span class="product-category">
+                    ORDER #{{ order["order_number"] }}
+                </span>
+
+                <h2>Order Details</h2>
+
+                <small>{{ order["date"] }}</small>
+            </div>
+
+            <span class="status-pill">
+                {{ order["status"] }}
+            </span>
+
+        </div>
+
+        <!-- Product Details -->
+
+        <div class="history-products">
+
+            {% for item in order["items"] %}
+
+            <div class="history-product">
+                <span>
+                    {{ item["name"] }} × {{ item["quantity"] }}
+                </span>
+
+                <strong>₹{{ item["amount"] }}</strong>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- Order Total -->
+
+        <div class="history-total">
+
+            <span>
+                Subtotal ₹{{ order["subtotal"] }}
+                · Discount ₹{{ order["discount"] }}
+            </span>
+
+            <strong>Total: ₹{{ order["total"] }}</strong>
+
+        </div>
+
+        <!-- Order Tracking -->
+
+        <h3 class="tracking-title">Order Tracking</h3>
+
+        {% set steps = ["Pending", "Processing", "Shipped", "Delivered"] %}
+        {% set current_status = order["status"] %}
+
+        {% if current_status == "Cancelled" %}
+
+            <div class="cancelled-message">
+                Your order has been cancelled.
+            </div>
+
+        {% else %}
+
+            {% set current_index = steps.index(current_status) if current_status in steps else -1 %}
+
+            <div class="tracking-steps">
+
+                {% for step in steps %}
+
+                <div class="tracking-step
+                    {% if current_index >= loop.index0 %}completed{% endif %}">
+
+                    <div class="tracking-dot">
+                        {% if current_index >= loop.index0 %}
+                            ✓
+                        {% else %}
+                            {{ loop.index }}
+                        {% endif %}
+                    </div>
+
+                    {{ step }}
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <p class="tracking-note">
+                Current status: <strong>{{ current_status }}</strong>
+            </p>
+
+        {% endif %}
+
+        <!-- Cancel Order Button -->
+
+        {% if current_status in ["Pending", "Processing"] %}
+
+        <div class="cancel-section">
+
+            <form
+                method="POST"
+                action="{{ url_for('cancel_order', order_number=order['order_number']) }}"
+                onsubmit="return confirm('Are you sure you want to cancel this order?');"
+            >
+
+                <button type="submit" class="cancel-btn">
+                    Cancel Order
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+
+    <div>📦</div>
+
+    <h2>No orders yet</h2>
+
+    <p>Your purchases will appear here after placing an order.</p>
+
+    <a class="btn btn-pink" href="{{ url_for('products') }}">
+        Explore Products
+    </a>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

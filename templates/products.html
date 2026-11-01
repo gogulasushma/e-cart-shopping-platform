@@ -1,0 +1,159 @@
+
+{% extends "base.html" %}
+
+{% block title %}E-Cart | Products{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <span class="eyebrow">THE E-CART COLLECTION</span>
+
+    <h1>
+        {% if selected_category %}
+            {{ selected_category }}
+        {% elif query %}
+            Search results
+        {% else %}
+            All Products
+        {% endif %}
+    </h1>
+
+    <p>Find something lovely for yourself or your home.</p>
+</section>
+
+<div class="filter-row">
+    <div class="category-pills">
+
+        <a class="pill {% if not selected_category %}active{% endif %}"
+           href="{{ url_for('products', q=query) }}">
+            All
+        </a>
+
+        {% for category in categories %}
+            <a class="pill {% if selected_category == category %}active{% endif %}"
+               href="{{ url_for('products', category=category, q=query) }}">
+                {{ category }}
+            </a>
+        {% endfor %}
+
+    </div>
+
+    <span class="result-count">
+        {{ products|length }} product(s)
+    </span>
+</div>
+
+{% if products %}
+
+<div class="product-grid">
+
+    {% for pid, product in products %}
+
+    <article class="product-card">
+
+        <div class="product-image-wrap">
+            <img
+                src="{{ product.image }}"
+                alt="{{ product.name }}"
+                loading="lazy"
+                onerror="this.onerror=null;this.src='https://placehold.co/500x400/fce7f0/9d174d?text=E-Cart';">
+        </div>
+
+        <div class="product-info">
+
+            <span class="product-category">
+                {{ product.category }}
+            </span>
+
+            <h3>{{ product.name }}</h3>
+
+            <div class="product-bottom">
+                <strong>₹{{ product.price }}</strong>
+
+                <span class="stock-label">
+                    {{ product.stock }} in stock
+                </span>
+            </div>
+
+            <!-- Add to Wishlist -->
+            {% if session.get('customer_id') %}
+
+                <form action="{{ url_for('add_to_wishlist', pid=pid) }}"
+                      method="post"
+                      class="mb-2">
+
+                    <button type="submit"
+                            class="btn btn-outline-danger w-100">
+                        ♡ Add to Wishlist
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <a href="{{ url_for('customer_login') }}"
+                   class="btn btn-outline-danger w-100 mb-2">
+                    ♡ Login to Wishlist
+                </a>
+
+            {% endif %}
+
+            <!-- Add to Cart -->
+            {% if product.stock > 0 %}
+
+                <form action="{{ url_for('add_to_cart', pid=pid) }}"
+                      method="post"
+                      class="add-form">
+
+                    <label class="visually-hidden"
+                           for="qty-{{ pid }}">
+                        Quantity
+                    </label>
+
+                    <input
+                        id="qty-{{ pid }}"
+                        name="quantity"
+                        type="number"
+                        min="1"
+                        max="{{ product.stock }}"
+                        value="1">
+
+                    <button class="btn btn-pink" type="submit">
+                        Add to Cart
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <button class="btn btn-secondary w-100" disabled>
+                    Out of stock
+                </button>
+
+            {% endif %}
+
+        </div>
+
+    </article>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+    <div>🔎</div>
+
+    <h2>No products found</h2>
+
+    <p>Try another product name or category.</p>
+
+    <a class="btn btn-pink" href="{{ url_for('products') }}">
+        Show all products
+    </a>
+</div>
+
+{% endif %}
+
+{% endblock %}

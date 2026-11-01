@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+
+{% block title %}E-Cart | Checkout{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <span class="eyebrow">ONE LAST LOOK</span>
+    <h1>Checkout</h1>
+    <p>Confirm your order summary below.</p>
+</section>
+
+<div class="checkout-layout">
+
+    <section class="summary-card order-review">
+        <h2>Your Items</h2>
+
+        {% for item in items %}
+        <div class="checkout-item">
+            <img src="{{ item.image }}"
+                 alt="{{ item.name }}"
+                 onerror="this.src='https://placehold.co/100x100?text=E-Cart'">
+
+            <div>
+                <strong>{{ item.name }}</strong>
+                <small>Quantity: {{ item.quantity }} × ₹{{ item.price }}</small>
+            </div>
+
+            <strong>₹{{ item.amount }}</strong>
+        </div>
+        {% endfor %}
+    </section>
+
+    <aside class="summary-card">
+        <h2>Bill Summary</h2>
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>₹{{ subtotal }}</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Discount ({{ rate }}%)</span>
+            <strong class="discount-value">− ₹{{ discount }}</strong>
+        </div>
+
+        <div class="summary-row total-row">
+            <span>Payable Total</span>
+            <strong>₹{{ total }}</strong>
+        </div>
+
+        <p class="summary-note">
+            This is a demo checkout. No real payment details are collected.
+        </p>
+
+        <form action="{{ url_for('checkout') }}" method="POST">
+            <button class="btn btn-pink btn-lg w-100"
+                    type="submit">
+                Place Order
+            </button>
+        </form>
+
+        <a class="text-link back-link" href="{{ url_for('cart') }}">
+            ← Back to cart
+        </a>
+    </aside>
+
+</div>
+
+{% endblock %}
+

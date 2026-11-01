@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Cart Admin Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff0f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: white;
+            width: 320px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px #e5b9ca;
+        }
+        h1 { color: #e91e63; text-align: center; }
+        p { text-align: center; color: #666; }
+        label { display: block; margin-top: 15px; }
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 22px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>E-Cart</h1>
+        <p>Administrator Login</p>
+        <form action="/admin/login" method="POST">
+            <label for="username">Username</label>
+            <input id="username" name="username"
+                   type="text" required>
+
+            <label for="password">Password</label>
+            <input id="password" name="password"
+                   type="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

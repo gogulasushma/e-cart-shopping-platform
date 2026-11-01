@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Cart Admin Dashboard</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff5f8;
+            color: #333;
+        }
+        header {
+            background: #e91e63;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        header a {
+            color: white;
+            text-decoration: none;
+            background: #c2185b;
+            padding: 10px 15px;
+            border-radius: 7px;
+        }
+        main { padding: 30px; max-width: 1100px; margin: auto; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px #ead5dd;
+        }
+        .card h3 { color: #777; margin-top: 0; font-size: 16px; }
+        .number { color: #e91e63; font-size: 32px; font-weight: bold; }
+        .links {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .links a {
+            background: white;
+            color: #c2185b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #f2c4d5;
+        }
+        footer { text-align: center; padding: 20px; color: #777; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>E-Cart Admin Dashboard</h1>
+        <a href="/admin/logout">Logout</a>
+    </header>
+
+    <main>
+        <h2>Welcome, Administrator!</h2>
+        <p>Here is an overview of your E-Cart store.</p>
+
+        <section class="cards">
+            <div class="card">
+                <h3>Total Products</h3>
+                <div class="number">{{ total_products }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Available Stock</h3>
+                <div class="number">{{ total_stock }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Total Orders</h3>
+                <div class="number">{{ total_orders }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Total Sales</h3>
+                <div class="number">₹{{ total_sales }}</div>
+            </div>
+        </section>
+
+        <section class="links">
+            <a href="/admin/products">Manage Products</a>
+            <a href="/admin/orders">View Orders</a>
+            <a href="/admin/reports">Sales Reports</a>
+            <a href="/">Open Customer Website</a>
+        </section>
+    </main>
+
+    <footer>E-Cart Admin Panel</footer>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}E-Cart | Home{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-copy">
+        <span class="eyebrow">YOUR HAPPY SHOPPING PLACE</span>
+        <h1>Welcome to <span>E-Cart</span></h1>
+        <p>Discover great products at great prices. A little joy in every order.</p>
+        <a class="btn btn-pink btn-lg" href="{{ url_for('products') }}">Shop Now <span aria-hidden="true">→</span></a>
+        <div class="hero-perks"><span>✓ Great value</span><span>✓ Easy shopping</span><span>✓ Simple checkout</span></div>
+    </div>
+    <div class="hero-art"><div class="hero-circle"></div><div class="hero-bag">🛍️</div><div class="floating-tag tag-one">Fresh finds ✨</div><div class="floating-tag tag-two">Happy prices ♡</div></div>
+</section>
+
+<section class="section-block">
+    <div class="section-heading"><div><span class="eyebrow">FIND YOUR FAVOURITES</span><h2>Shop by category</h2></div><a class="text-link" href="{{ url_for('products') }}">View all products →</a></div>
+    <div class="category-grid">
+        {% set category_emojis = {'Clothing':'👗','Accessories':'👜','Footwear':'👟','Home':'🏠','Beauty':'💄','Electronics':'🎧'} %}
+        {% for category in categories %}
+        <a class="category-card" href="{{ url_for('products', category=category) }}"><span class="category-emoji">{{ category_emojis[category] }}</span><span>{{ category }}</span><small>Explore collection</small></a>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section-block">
+    <div class="section-heading"><div><span class="eyebrow">PICKED FOR YOU</span><h2>Popular products</h2><p>Everyday essentials, all in one place.</p></div><a class="text-link" href="{{ url_for('products') }}">Shop everything →</a></div>
+    <div class="product-grid">
+        {% for pid, product in featured %}
+        <article class="product-card">
+            <a class="product-image-wrap" href="{{ url_for('products') }}"><img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/500x400/fce7f0/9d174d?text=E-Cart';"><span class="product-badge">E-Cart pick</span></a>
+            <div class="product-info"><span class="product-category">{{ product.category }}</span><h3>{{ product.name }}</h3><div class="product-bottom"><strong>₹{{ product.price }}</strong><span class="stock-label">{{ product.stock }} in stock</span></div>
+            <form action="{{ url_for('add_to_cart', pid=pid) }}" method="post"><input type="hidden" name="quantity" value="1"><button class="btn btn-pink w-100" type="submit" {% if product.stock <= 0 %}disabled{% endif %}>Add to Cart</button></form></div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+<section class="promo-strip"><div><span class="eyebrow">MORE IN YOUR CART, MORE SAVINGS</span><h2>Little treats. Lovely deals.</h2><p>Automatic discounts are applied at checkout when your cart qualifies.</p></div><a class="btn btn-light btn-lg" href="{{ url_for('products') }}">Explore deals →</a></section>
+{% endblock %}

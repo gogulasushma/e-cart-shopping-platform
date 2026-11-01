@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Cart - Edit Product</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            font-family: Arial, sans-serif;
+            background: #fff5f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #ead5dd;
+        }
+
+        h1 {
+            text-align: center;
+            color: #e91e63;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #e91e63;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #c2185b;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #e91e63;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .flash-message {
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #ffebee;
+            color: #c62828;
+            border-radius: 6px;
+        }
+
+        .preview-container {
+            display: none;
+            margin: 10px 0 20px;
+            padding: 15px;
+            text-align: center;
+            border: 1px dashed #e91e63;
+            border-radius: 8px;
+            background: #fff8fa;
+        }
+
+        .preview-container h3 {
+            color: #e91e63;
+            margin-top: 0;
+            font-size: 16px;
+        }
+
+        #imagePreview {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+        }
+
+        #imageError {
+            display: none;
+            color: #c62828;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Edit Product</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST"
+              action="{{ url_for('edit_product', pid=request.view_args['pid']) }}"
+              onsubmit="return validateProductForm()">
+
+            <label>Product Name:</label>
+            <input
+                type="text"
+                id="name"
+                name="name"
+                value="{{ product.name }}"
+                minlength="2"
+                maxlength="100"
+                required
+            >
+
+            <label>Category:</label>
+
+            <select name="category" id="category" required>
+
+                {% for category in categories %}
+                    <option value="{{ category }}"
+                        {% if category == product.category %}selected{% endif %}>
+                        {{ category }}
+                    </option>
+                {% endfor %}
+
+            </select>
+
+            <label>Price (₹):</label>
+            <input
+                type="number"
+                id="price"
+                name="price"
+                value="{{ product.price }}"
+                min="1"
+                max="1000000"
+                step="1"
+                required
+            >
+
+            <label>Available Stock:</label>
+            <input
+                type="number"
+                id="stock"
+                name="stock"
+                value="{{ product.stock }}"
+                min="0"
+                max="100000"
+                step="1"
+                required
+            >
+
+            <label>Product Image URL:</label>
+            <input
+                type="url"
+                id="image"
+                name="image"
+                value="{{ product.image }}"
+                maxlength="2000"
+                required
+            >
+
+            <!-- Image Preview -->
+
+            <div class="preview-container" id="previewContainer">
+
+                <h3>Product Image Preview</h3>
+
+                <img
+                    id="imagePreview"
+                    src=""
+                    alt="Product Image Preview"
+                >
+
+                <p id="imageError">
+                    Unable to load this image. Please check the URL.
+                </p>
+
+            </div>
+
+            <button type="submit">Update Product</button>
+
+        </form>
+
+        <a href="{{ url_for('admin_products') }}" class="back-link">
+            ← Back to Products
+        </a>
+
+    </div>
+
+    <script>
+
+        // Live Image Preview
+
+        const imageInput = document.getElementById("image");
+        const previewContainer = document.getElementById("previewContainer");
+        const imagePreview = document.getElementById("imagePreview");
+        const imageError = document.getElementById("imageError");
+
+        function showImagePreview() {
+
+            const imageUrl = imageInput.value.trim();
+
+            imagePreview.src = "";
+            imageError.style.display = "none";
+
+            if (
+                imageUrl.startsWith("http://") ||
+                imageUrl.startsWith("https://")
+            ) {
+                previewContainer.style.display = "block";
+                imagePreview.src = imageUrl;
+            } else {
+                previewContainer.style.display = "none";
+            }
+        }
+
+        imageInput.addEventListener("input", showImagePreview);
+
+        imagePreview.addEventListener("load", function () {
+            imageError.style.display = "none";
+        });
+
+        imagePreview.addEventListener("error", function () {
+            imageError.style.display = "block";
+        });
+
+        // Show existing product image when page opens
+
+        showImagePreview();
+
+
+        // Form Validation
+
+        function validateProductForm() {
+
+            const name = document.getElementById("name").value.trim();
+            const category = document.getElementById("category").value;
+            const price = document.getElementById("price").value;
+            const stock = document.getElementById("stock").value;
+            const image = document.getElementById("image").value.trim();
+
+            if (name.length < 2 || name.length > 100) {
+                alert("Product name must contain 2 to 100 characters.");
+                return false;
+            }
+
+            if (!category) {
+                alert("Please select a product category.");
+                return false;
+            }
+
+            if (
+                price === "" ||
+                Number(price) < 1 ||
+                Number(price) > 1000000 ||
+                !Number.isInteger(Number(price))
+            ) {
+                alert("Please enter a valid price.");
+                return false;
+            }
+
+            if (
+                stock === "" ||
+                Number(stock) < 0 ||
+                Number(stock) > 100000 ||
+                !Number.isInteger(Number(stock))
+            ) {
+                alert("Please enter a valid stock quantity.");
+                return false;
+            }
+
+            if (
+                !image.startsWith("http://") &&
+                !image.startsWith("https://")
+            ) {
+                alert("Please enter a valid image URL.");
+                return false;
+            }
+
+            return true;
+        }
+
+    </script>
+
+</body>
+</html>
